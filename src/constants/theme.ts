@@ -3,7 +3,8 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import '@/global.css';
+// Note: CSS imports are not used in React Native/Expo apps
+// import '@/global.css';
 
 import { Platform } from 'react-native';
 

@@ -2,13 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/assets/*": [
-        "./assets/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@store/*": ["./src/store/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@services/*": ["./src/services/*"],
+      "@constants/*": ["./src/constants/*"]
     }
   },
   "include": [
@@ -16,5 +21,11 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/constants/theme.ts",
+    "src/components/animated-icon.web.tsx"
   ]
 }

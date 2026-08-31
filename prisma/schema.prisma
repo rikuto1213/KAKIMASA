@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  phone     String?
+  points    Int        @default(0)
+  avatar    String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  reservations   Reservation[]
+  pointsHistory  PointsTransaction[]
+  reviews        Review[]
+  favorites      Favorite[]
+
+  @@map("users")
+}
+
+// Restaurant Model
+model Restaurant {
+  id                String     @id @default(cuid())
+  name              String
+  description       String
+  address           String
+  latitude          Float
+  longitude         Float
+  imageUrl          String?
+  rating            Float      @default(0)
+  reviews           Int        @default(0)
+  phoneNumber       String?
+  email             String?
+  website           String?
+  pointsPerVisit    Int        @default(10)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  openingHours      OpeningHours?
+  discounts         Discount[]
+  reservations      Reservation[]
+  reviews_relation  Review[]
+  favorites_relation Favorite[]
+
+  @@map("restaurants")
+}
+
+// Opening Hours Model
+model OpeningHours {
+  id           String      @id @default(cuid())
+  restaurantId String      @unique
+  monday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  tuesday      TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  wednesday    TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  thursday     TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  friday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  saturday     TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  sunday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("opening_hours")
+}
+
+type TimeSlot {
+  open   String
+  close  String
+  closed Boolean?
+}
+
+// Reservation Model
+model Reservation {
+  id               String     @id @default(cuid())
+  userId           String
+  restaurantId     String
+  date             DateTime
+  time             String
+  numberOfPeople   Int
+  specialRequests  String?
+  status           String     @default("pending") // pending, confirmed, cancelled, completed
+  pointsEarned     Int?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("reservations")
+  @@index([userId])
+  @@index([restaurantId])
+}
+
+// Points Transaction Model
+model PointsTransaction {
+  id              String     @id @default(cuid())
+  userId          String
+  type            String     // earned, used
+  amount          Int
+  restaurantId    String?
+  reservationId   String?
+  description     String
+  createdAt       DateTime   @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("points_transactions")
+  @@index([userId])
+}
+
+// Discount Model
+model Discount {
+  id              String     @id @default(cuid())
+  restaurantId    String
+  name            String
+  description     String
+  pointsRequired  Int
+  discount        Int
+  discountType    String     // percentage, fixed
+  validUntil      DateTime
+  active          Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("discounts")
+  @@index([restaurantId])
+}
+
+// Review Model
+model Review {
+  id              String     @id @default(cuid())
+  userId          String
+  restaurantId    String
+  rating          Int
+  comment         String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant      Restaurant @relation("reviews_relation", fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+  @@index([userId])
+  @@index([restaurantId])
+}
+
+// Favorite Model
+model Favorite {
+  id              String     @id @default(cuid())
+  userId          String
+  restaurantId    String
+  createdAt       DateTime   @default(now())
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant      Restaurant @relation("favorites_relation", fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("favorites")
+  @@unique([userId, restaurantId])
+  @@index([userId])
+}
