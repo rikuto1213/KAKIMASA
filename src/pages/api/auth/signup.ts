@@ -10,10 +10,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, email, password, phone } = req.body;
+    const { email, password, gender } = req.body;
 
-    if (!name || !email || !password || !phone) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!email || !password || !gender) {
+      return res.status(400).json({ error: 'Email, password and gender are required' });
+    }
+
+    if (!['male', 'female', 'other'].includes(gender)) {
+      return res.status(400).json({ error: 'Invalid gender value' });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -25,13 +29,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const name = email.split('@')[0];
 
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        phone,
+        gender,
         points: 0,
       },
     });
@@ -45,6 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         name: user.name,
         email: user.email,
         phone: user.phone,
+        gender: user.gender,
         points: user.points,
         avatar: user.avatar,
         createdAt: user.createdAt,

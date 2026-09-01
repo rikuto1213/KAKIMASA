@@ -3,7 +3,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
+  gender?: 'male' | 'female' | 'other';
   points: number;
   avatar?: string;
   createdAt: Date;
@@ -108,10 +109,9 @@ export interface LoginRequest {
 }
 
 export interface SignUpRequest {
-  name: string;
   email: string;
   password: string;
-  phone: string;
+  gender: 'male' | 'female' | 'other';
 }
 
 export interface AuthResponse {

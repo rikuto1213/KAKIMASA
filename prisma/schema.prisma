@@ -17,6 +17,7 @@ model User {
   password  String
   name      String
   phone     String?
+  gender    String?
   points    Int        @default(0)
   avatar    String?
   createdAt DateTime   @default(now())

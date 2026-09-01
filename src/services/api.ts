@@ -60,8 +60,8 @@ class ApiService {
     return this.apiClient.post('/auth/login', { email, password });
   }
 
-  async signup(name: string, email: string, password: string, phone: string) {
-    return this.apiClient.post('/auth/signup', { name, email, password, phone });
+  async signup(email: string, password: string, gender: 'male' | 'female' | 'other') {
+    return this.apiClient.post('/auth/signup', { email, password, gender });
   }
 
   async logout() {
