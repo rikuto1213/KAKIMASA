@@ -1,16 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Expo web compatibility
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
+  serverExternalPackages: ['@prisma/client'],
+  typescript: {
+    tsconfigPath: 'tsconfig.next.json',
   },
   // Allow usage with Expo
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname),
-    };
-    return config;
+  turbopack: {
+    resolveAlias: {
+      '@/*': './*',
+      '@/lib/*': './lib/*',
+      '@/prisma/*': './prisma/*',
+    },
   },
 };
 

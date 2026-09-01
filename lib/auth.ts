@@ -6,6 +6,7 @@ const JWT_EXPIRY = '7d';
 export interface TokenPayload {
   userId: string;
   email: string;
+  qr?: boolean;
 }
 
 export function generateToken(payload: TokenPayload): string {
@@ -29,8 +30,8 @@ export function verifyToken(token: string): TokenPayload | null {
   }
 }
 
-export function extractTokenFromHeader(authHeader: string | null): string | null {
-  if (!authHeader) return null;
+export function extractTokenFromHeader(authHeader: string | string[] | null | undefined): string | null {
+  if (!authHeader || Array.isArray(authHeader)) return null;
   const parts = authHeader.split('Bearer ');
   return parts.length === 2 ? parts[1] : null;
 }

@@ -63,23 +63,17 @@ model Restaurant {
 model OpeningHours {
   id           String      @id @default(cuid())
   restaurantId String      @unique
-  monday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  tuesday      TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  wednesday    TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  thursday     TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  friday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  saturday     TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
-  sunday       TimeSlot    @default("{\"open\":\"09:00\",\"close\":\"22:00\"}")
+  monday       Json
+  tuesday      Json
+  wednesday    Json
+  thursday     Json
+  friday       Json
+  saturday     Json
+  sunday       Json
 
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("opening_hours")
-}
-
-type TimeSlot {
-  open   String
-  close  String
-  closed Boolean?
 }
 
 // Reservation Model
@@ -152,7 +146,7 @@ model Review {
   updatedAt       DateTime   @updatedAt
 
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  restaurant      Restaurant @relation("reviews_relation", fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
   @@index([userId])
@@ -167,7 +161,7 @@ model Favorite {
   createdAt       DateTime   @default(now())
 
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  restaurant      Restaurant @relation("favorites_relation", fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("favorites")
   @@unique([userId, restaurantId])

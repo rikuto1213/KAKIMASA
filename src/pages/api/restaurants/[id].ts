@@ -1,13 +1,17 @@
 import prisma from '@/lib/prisma';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
+    const { id } = req.query as { id: string };
+
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         openingHours: true,
         discounts: {
@@ -32,18 +36,12 @@ export async function GET(
     });
 
     if (!restaurant) {
-      return NextResponse.json(
-        { error: 'Restaurant not found' },
-        { status: 404 }
-      );
+      return res.status(404).json({ error: 'Restaurant not found' });
     }
 
-    return NextResponse.json(restaurant);
+    return res.status(200).json(restaurant);
   } catch (error) {
     console.error('Get restaurant error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

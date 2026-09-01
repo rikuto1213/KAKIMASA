@@ -1,16 +1,17 @@
 import prisma from '@/lib/prisma';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function GET(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q');
+    const { q: query } = req.query as { q?: string };
 
     if (!query || query.length < 2) {
-      return NextResponse.json(
-        { error: 'Query must be at least 2 characters' },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: 'Query must be at least 2 characters' });
     }
 
     const restaurants = await prisma.restaurant.findMany({
@@ -30,12 +31,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(restaurants);
+    return res.status(200).json(restaurants);
   } catch (error) {
     console.error('Search restaurants error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

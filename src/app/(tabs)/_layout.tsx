@@ -1,3 +1,4 @@
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function TabsLayout() {
@@ -17,33 +18,56 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarLabel: 'Home',
-          headerTitle: 'Restaurants',
+          title: 'ホーム',
+          tabBarLabel: 'ホーム',
+          headerTitle: 'レストラン',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="home" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
-          tabBarLabel: 'Search',
-          headerTitle: 'Search Restaurants',
+          title: '検索',
+          tabBarLabel: '検索',
+          headerTitle: 'レストランを検索',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="search" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="points"
+        options={{
+          title: 'ポイント',
+          tabBarLabel: 'ポイント',
+          headerTitle: 'ポイントカード',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="credit-card" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="reservations"
         options={{
-          title: 'Reservations',
-          tabBarLabel: 'Bookings',
-          headerTitle: 'My Reservations',
+          title: '予約',
+          tabBarLabel: '予約',
+          headerTitle: '予約一覧',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="calendar" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarLabel: 'Profile',
-          headerTitle: 'My Profile',
+          title: 'プロフィール',
+          tabBarLabel: 'プロフィール',
+          headerTitle: 'プロフィール',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="user" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

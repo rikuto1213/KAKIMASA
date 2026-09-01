@@ -1,12 +1,19 @@
 import prisma from '@/lib/prisma';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function GET(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const latitude = searchParams.get('latitude');
-    const longitude = searchParams.get('longitude');
-    const radius = parseInt(searchParams.get('radius') || '50', 10);
+    const { latitude, longitude, radius: radiusParam } = req.query as {
+      latitude?: string;
+      longitude?: string;
+      radius?: string;
+    };
+    const radius = parseInt(radiusParam || '50', 10);
 
     let restaurants;
 
@@ -42,13 +49,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json(restaurants);
+    return res.status(200).json(restaurants);
   } catch (error) {
     console.error('Get restaurants error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 

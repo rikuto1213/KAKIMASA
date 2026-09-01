@@ -1,16 +1,18 @@
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function POST(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     // Check if data already exists
     const existingUser = await prisma.user.findFirst();
     if (existingUser) {
-      return NextResponse.json(
-        { message: 'Data already seeded' },
-        { status: 400 }
-      );
+      return res.status(400).json({ message: 'Data already seeded' });
     }
 
     // Create sample users
@@ -179,24 +181,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      {
-        message: 'Seeding completed successfully',
-        data: {
-          users: 2,
-          restaurants: 3,
-          reservations: 1,
-          reviews: 1,
-          favorites: 2,
-        },
+    return res.status(201).json({
+      message: 'Seeding completed successfully',
+      data: {
+        users: 2,
+        restaurants: 3,
+        reservations: 1,
+        reviews: 1,
+        favorites: 2,
       },
-      { status: 201 }
-    );
+    });
   } catch (error) {
     console.error('Seeding error:', error);
-    return NextResponse.json(
-      { error: 'Seeding failed', details: (error as any).message },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: 'Seeding failed', details: (error as any).message });
   }
 }

@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
 import { API_BASE_URL, API_TIMEOUT } from '@constants/index';
 import { useAuthStore } from '@store/useAuthStore';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 
 class ApiService {
   private apiClient: AxiosInstance;
@@ -68,113 +68,8 @@ class ApiService {
     return this.apiClient.post('/auth/logout');
   }
 
-  // Restaurant endpoints
-  async getRestaurants(latitude?: number, longitude?: number, radius?: number) {
-    return this.apiClient.get('/restaurants', {
-      params: { latitude, longitude, radius },
-    });
-  }
-
-  async getRestaurantDetails(restaurantId: string) {
-    return this.apiClient.get(`/restaurants/${restaurantId}`);
-  }
-
-  async searchRestaurants(query: string) {
-    return this.apiClient.get('/restaurants/search', { params: { q: query } });
-  }
-
-  // Reservation endpoints
-  async getReservations() {
-    return this.apiClient.get('/reservations');
-  }
-
-  async createReservation(restaurantId: string, date: string, time: string, numberOfPeople: number, specialRequests?: string) {
-    return this.apiClient.post('/reservations', {
-      restaurantId,
-      date,
-      time,
-      numberOfPeople,
-      specialRequests,
-    });
-  }
-
-  async cancelReservation(reservationId: string) {
-    return this.apiClient.put(`/reservations/${reservationId}/cancel`);
-  }
-
-  // Points endpoints
-  async getUserPoints() {
-    return this.apiClient.get('/points');
-  }
-
-  async getPointsTransactions() {
-    return this.apiClient.get('/points/transactions');
-  }
-
-  // User endpoints
-  async getUserProfile() {
-    return this.apiClient.get('/user/profile');
-  }
-
-  async updateUserProfile(userData: any) {
-    return this.apiClient.put('/user/profile', userData);
-  }
-
-  // Favorites endpoints
-  async addFavorite(restaurantId: string) {
-    return this.apiClient.post('/favorites', { restaurantId });
-  }
-
-  async removeFavorite(restaurantId: string) {
-    return this.apiClient.delete(`/favorites/${restaurantId}`);
-  }
-
-  async getFavorites() {
-    return this.apiClient.get('/favorites');
-  }
-
-  // Reviews endpoints
-  async getRestaurantReviews(restaurantId: string) {
-    return this.apiClient.get(`/restaurants/${restaurantId}/reviews`);
-  }
-
-  async createReview(restaurantId: string, rating: number, comment: string) {
-    return this.apiClient.post(`/restaurants/${restaurantId}/reviews`, {
-      rating,
-      comment,
-    });
-  }
-}
-
-export const apiService = new ApiService();
-              // const response = await this.refreshAccessToken(refreshToken);
-              // useAuthStore.getState().setToken(response.token, response.refreshToken);
-              // return this.apiClient(originalRequest);
-            } catch (refreshError) {
-              useAuthStore.getState().logout();
-              return Promise.reject(refreshError);
-            }
-          } else {
-            useAuthStore.getState().logout();
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
-  }
-
-  // Auth endpoints
-  async login(email: string, password: string) {
-    return this.apiClient.post('/auth/login', { email, password });
-  }
-
-  async signup(name: string, email: string, password: string, phone: string) {
-    return this.apiClient.post('/auth/signup', { name, email, password, phone });
-  }
-
-  async logout() {
-    return this.apiClient.post('/auth/logout');
+  async getCurrentToken() {
+    return this.apiClient.get('/auth/current-token');
   }
 
   // Restaurant endpoints
@@ -218,6 +113,10 @@ export const apiService = new ApiService();
 
   async getPointsTransactions() {
     return this.apiClient.get('/points/transactions');
+  }
+
+  async awardPoints(qrToken: string, amount: number) {
+    return this.apiClient.post('/points/award', { qrToken, amount });
   }
 
   // User endpoints
